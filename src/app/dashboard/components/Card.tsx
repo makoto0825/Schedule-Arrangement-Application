@@ -13,7 +13,7 @@ const Card = ({ event, color }: CardProps) => {
       enterTo='opacity-100 scale-100'
     >
       <div
-        className={`rounded-2xl border p-4 shadow-lg bg-white text-gray-700 border-t-8 cursor-pointer  ${
+        className={`rounded-2xl border p-4 bg-white text-gray-700 border-t-8 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-lg ${
           color === 'upcoming' ? ' border-blue-500  ' : ' border-gray-300'
         }`}
       >
