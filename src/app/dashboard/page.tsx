@@ -96,17 +96,7 @@ const Page = () => {
           <h2 className='text-xl font-semibold mb-4'>Upcoming Events</h2>
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
             {upcomingEvents.map((event) => (
-              <Card key={event.id} color={'upcoming'}>
-                <h3 className='font-semibold text-lg truncate'>
-                  {event.title}
-                </h3>
-                <p className='text-sm text-gray-500'>
-                  {event.dateOptions[0].toLocaleString()}
-                </p>
-                <p className='text-sm text-gray-400'>
-                  {event.respondents} respondents
-                </p>
-              </Card>
+              <Card key={event.id} event={event} color={'upcoming'}></Card>
             ))}
           </div>
         </div>
@@ -116,17 +106,7 @@ const Page = () => {
           <h2 className='text-xl font-semibold mb-4'>Past Events</h2>
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
             {pastEvents.map((event) => (
-              <Card key={event.id} color={'past'}>
-                <h3 className='font-semibold text-lg truncate'>
-                  {event.title}
-                </h3>
-                <p className='text-sm text-gray-500'>
-                  {event.dateOptions[0].toLocaleString()}
-                </p>
-                <p className='text-sm text-gray-400'>
-                  {event.respondents} respondents
-                </p>
-              </Card>
+              <Card key={event.id} event={event} color={'past'}></Card>
             ))}
           </div>
         </div>

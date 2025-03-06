@@ -2,7 +2,7 @@ import { Fragment } from 'react';
 import { Transition } from '@headlessui/react';
 import { CardProps } from '../types';
 
-const Card = ({ children, color }: CardProps) => {
+const Card = ({ event, color }: CardProps) => {
   return (
     <Transition
       as={Fragment}
@@ -17,7 +17,11 @@ const Card = ({ children, color }: CardProps) => {
           color === 'upcoming' ? ' border-blue-500  ' : ' border-gray-300'
         }`}
       >
-        {children}
+        <h3 className='font-semibold text-lg truncate'>{event.title}</h3>
+        <p className='text-sm text-gray-500'>
+          {event.dateOptions[0].toLocaleString()}
+        </p>
+        <p className='text-sm text-gray-400'>{event.respondents} respondents</p>
       </div>
     </Transition>
   );

@@ -1,6 +1,6 @@
-import { ReactNode } from 'react';
+import { Event } from '../common/type';
 
 export type CardProps = {
-  children: ReactNode;
+  event: Event;
   color: 'upcoming' | 'past';
 };
