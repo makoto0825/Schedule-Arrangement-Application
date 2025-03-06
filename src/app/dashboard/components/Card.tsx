@@ -2,7 +2,7 @@ import { Fragment } from 'react';
 import { Transition } from '@headlessui/react';
 import { CardProps } from '../types';
 
-const Card = ({ children, highlight }: CardProps) => {
+const Card = ({ children, color }: CardProps) => {
   return (
     <Transition
       as={Fragment}
@@ -14,7 +14,7 @@ const Card = ({ children, highlight }: CardProps) => {
     >
       <div
         className={`rounded-2xl border p-4 shadow-lg bg-white text-gray-700 border-t-8 cursor-pointer  ${
-          highlight ? ' border-blue-500  ' : ' border-gray-300'
+          color === 'upcoming' ? ' border-blue-500  ' : ' border-gray-300'
         }`}
       >
         {children}

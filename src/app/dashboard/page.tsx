@@ -1,70 +1,92 @@
 import React from 'react';
 import Card from './components/Card';
-import { Event } from './types';
+import { Event } from '../common/type';
+
+const today = new Date();
 
 //ハードコーディング用のデータ
 const events: Event[] = [
   {
     id: 1,
-    title: '🍣 Sunday Dinner',
-    date: 'Sun, Jan 8 | 5:00PM',
+    title: 'Event 1',
+    dateOptions: [
+      new Date('2025-01-08T17:00:00'),
+      new Date('2025-01-09T17:00:00'),
+    ],
     respondents: 5,
-    upcoming: true,
   },
   {
     id: 2,
-    title: '🏒 Hockey at West Mall',
-    date: 'Sun, Jan 8 | 5:00PM',
+    title: 'Event 2',
+    dateOptions: [
+      new Date('2025-04-08T17:00:00'),
+      new Date('2025-05-09T17:00:00'),
+    ],
     respondents: 1,
-    upcoming: true,
   },
   {
     id: 3,
-    title: '🚀 Long Name will be text-overflowed',
-    date: 'Sun, Jan 8 | 5:00PM',
+    title: 'Event 3',
+    dateOptions: [
+      new Date('2025-04-08T17:00:00'),
+      new Date('2025-05-09T17:00:00'),
+    ],
     respondents: 4,
-    upcoming: true,
   },
   {
     id: 4,
-    title: '🏒 Hockey at West Mall',
-    date: 'Sun, Jan 8 | 5:00PM',
+    title: 'Event 4',
+    dateOptions: [
+      new Date('2023-01-08T17:00:00'),
+      new Date('2023-01-09T17:00:00'),
+    ],
     respondents: 1,
-    upcoming: false,
   },
   {
     id: 5,
-    title: '🍗 Sunday Dinner',
-    date: 'Sun, Jan 8 | 5:00PM',
+    title: 'Event 5',
+    dateOptions: [
+      new Date('2023-01-08T17:00:00'),
+      new Date('2023-01-09T17:00:00'),
+    ],
     respondents: 4,
-    upcoming: false,
   },
   {
     id: 6,
-    title: '🍗 Sunday Dinner',
-    date: 'Sun, Jan 8 | 5:00PM',
+    title: 'Event 6',
+    dateOptions: [
+      new Date('2023-01-08T17:00:00'),
+      new Date('2023-01-09T17:00:00'),
+    ],
     respondents: 4,
-    upcoming: false,
   },
   {
     id: 7,
-    title: '🍗 Sunday Dinner',
-    date: 'Sun, Jan 8 | 5:00PM',
+    title: 'Event 7',
+    dateOptions: [
+      new Date('2023-01-08T17:00:00'),
+      new Date('2023-01-09T17:00:00'),
+    ],
     respondents: 4,
-    upcoming: false,
   },
   {
     id: 8,
-    title: '🍗 Sunday Dinner',
-    date: 'Sun, Jan 8 | 5:00PM',
+    title: 'Event 8',
+    dateOptions: [
+      new Date('2023-01-08T17:00:00'),
+      new Date('2023-01-09T17:00:00'),
+    ],
     respondents: 4,
-    upcoming: false,
   },
 ];
 
 const Page = () => {
-  const upcomingEvents = events.filter((event) => event.upcoming);
-  const pastEvents = events.filter((event) => !event.upcoming);
+  const upcomingEvents = events.filter((e) =>
+    e.dateOptions.some((d) => d >= today)
+  );
+  const pastEvents = events.filter((e) =>
+    e.dateOptions.every((d) => d < today)
+  );
 
   return (
     <div className='bg-gray-100 h-full '>
@@ -74,11 +96,13 @@ const Page = () => {
           <h2 className='text-xl font-semibold mb-4'>Upcoming Events</h2>
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
             {upcomingEvents.map((event) => (
-              <Card key={event.id} highlight={true}>
+              <Card key={event.id} color={'upcoming'}>
                 <h3 className='font-semibold text-lg truncate'>
                   {event.title}
                 </h3>
-                <p className='text-sm text-gray-500'>{event.date}</p>
+                <p className='text-sm text-gray-500'>
+                  {event.dateOptions[0].toLocaleString()}
+                </p>
                 <p className='text-sm text-gray-400'>
                   {event.respondents} respondents
                 </p>
@@ -92,11 +116,13 @@ const Page = () => {
           <h2 className='text-xl font-semibold mb-4'>Past Events</h2>
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
             {pastEvents.map((event) => (
-              <Card key={event.id} highlight={false}>
+              <Card key={event.id} color={'past'}>
                 <h3 className='font-semibold text-lg truncate'>
                   {event.title}
                 </h3>
-                <p className='text-sm text-gray-500'>{event.date}</p>
+                <p className='text-sm text-gray-500'>
+                  {event.dateOptions[0].toLocaleString()}
+                </p>
                 <p className='text-sm text-gray-400'>
                   {event.respondents} respondents
                 </p>
