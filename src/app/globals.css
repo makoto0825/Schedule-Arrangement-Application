@@ -28,9 +28,3 @@ body {
   height: 100%;
   margin: 0; /* デフォルトのマージンをリセット */
 }
-
-.custom-calendar {
-  font-size: 1.5rem; /* フォントサイズを大きく */
-  width: 400px !important; /* カレンダー全体の幅を拡大 */
-  max-width: 100%;
-}
