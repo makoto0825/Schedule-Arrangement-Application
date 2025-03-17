@@ -1,0 +1,96 @@
+@startuml
+
+package "user" #LightBlue {
+  ' Supabaseのdefaultで存在するauth.usersテーブルを利用するので実際にはこのテーブルは作成しません
+  ' https://supabase.com/docs/guides/auth/users
+  entity "auth.users" as auth_users {
+    * id : string <<PK>>  
+    --
+    aud : string  
+    role : string  
+    email : string <<Unique>>  
+    email_confirmed_at : string?  
+    phone : string?  
+    phone_confirmed_at : string?  
+    confirmed_at : string?  
+    last_sign_in_at : string?  
+    app_metadata : jsonb  
+    user_metadata : jsonb  
+    identities : jsonb  
+    created_at : string  
+    updated_at : string  
+    is_anonymous : boolean  
+  }
+
+  ' users テーブル : "ユーザー"
+  entity "user_names" as user_names {
+    * id : int <<PK>>
+    --
+    user_id : string <<FK>> : "auth.usersのid"
+    last_name : string
+    first_name : string
+    created_at : datetime
+    updated_at : datetime
+  }
+}
+
+
+package "Event" #LightYellow {
+  ' events テーブル
+  entity "events" as events {
+    * id : int <<PK>>
+    --
+    user_id : string <<FK>> : "auth.usersのid"
+    name : varchar(255) { Not Null } 
+    description : text
+    created_at : dateTime
+    updated_at : dateTime
+  }
+
+  ' TimeSlots テーブル 
+  entity "time_slots" as time_slots {
+    * id : int <<PK>>
+    --
+    event_id : int <<FK>> : "eventsのid"
+    event_date : date { Not Null }
+    time: varchar(255) { Not Null }
+    created_at : dateTime
+    updated_at : dateTime
+  }
+}
+
+package "Vote" #LightGreen {
+  ' Votes テーブル
+  entity "Votes" as Votes {
+    * id : int <<PK>>
+    --
+    time_slot_id : int <<FK>> : "TimeSlotsのid"
+    status : int { Not Null } : "Voting status (1: '参加', 2: '不参加', 3: '？')"
+    voter_name: varchar(255) <<FK>> : "Votersのname"
+    created_at : dateTime
+    updated_at : dateTime
+  }
+
+  ' Voters テーブル 
+  entity "Voters" as Voters {
+    * id : int <<PK>> 
+    --
+    name : varchar(255) { Not Null } 
+    created_at : dateTime
+    updated_at : dateTime
+  }
+}
+
+' リレーションシップ
+' 1つのauth.usersは 1つのuser_namesを持つ（1:1）
+auth_users ||--|| user_names  
+' 1つのauth.usersは 複数を持つ（1:N）
+auth_users ||--o{ events : "has"  
+' 1つのeventsは 複数のtime_slots の event_id を持つ（1:N）
+events ||--o{ time_slots : "has"  
+' 1つのtime_slot の id は 複数のVotes の event_id を持つ（1:N）
+time_slots ||--o{ Votes : "has"  
+' 1つのVote の id は 1つのVoterのname を持つ（1:1）
+Voters ||--o{ Votes : "has"
+
+@enduml
