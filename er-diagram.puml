@@ -23,15 +23,15 @@ package "user" #LightBlue {
   }
 
   ' users テーブル : "ユーザー"
-  entity "user_names" as user_names {
-    * id : int <<PK>>
-    --
-    user_id : string <<FK>> : "auth.usersのid"
-    last_name : string
-    first_name : string
-    created_at : datetime
-    updated_at : datetime
-  }
+  ' entity "user_names" as user_names {
+  '   * id : int <<PK>>
+  '   --
+  '   user_id : string <<FK>> : "auth.usersのid"
+  '   last_name : string
+  '   first_name : string
+  '   created_at : datetime
+  '   updated_at : datetime
+  ' }
 }
 
 
@@ -66,7 +66,7 @@ package "Vote" #LightGreen {
     --
     time_slot_id : int <<FK>> : "TimeSlotsのid"
     status : int { Not Null } : "Voting status (1: '参加', 2: '不参加', 3: '？')"
-    voter_name: varchar(255) <<FK>> : "Votersのname"
+    voter_id: int <<FK>> : "Votersのid"
     created_at : dateTime
     updated_at : dateTime
   }
@@ -83,7 +83,7 @@ package "Vote" #LightGreen {
 
 ' リレーションシップ
 ' 1つのauth.usersは 1つのuser_namesを持つ（1:1）
-auth_users ||--|| user_names  
+' auth_users ||--|| user_names  
 ' 1つのauth.usersは 複数を持つ（1:N）
 auth_users ||--o{ events : "has"  
 ' 1つのeventsは 複数のtime_slots の event_id を持つ（1:N）
