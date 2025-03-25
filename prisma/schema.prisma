@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Event {
+  id          Int      @id @default(autoincrement())
+  user_id     String   @default(uuid()) @db.Uuid
+  name        String   @db.VarChar(255)
+  description String?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+  time_slots  TimeSlot[]
+  @@map("events")
+}
+
+model TimeSlot {
+  id         Int      @id @default(autoincrement())
+  event_id   Int
+  event_date DateTime
+  time       String  @db.VarChar(255)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  event      Event   @relation(fields: [event_id], references: [id], onDelete: Cascade)
+  votes      Vote[]
+
+  @@map("time_slots")
+}
+
+model Vote {
+  id           Int      @id @default(autoincrement())
+  time_slot_id Int
+  status       Int
+  voter_id     Int
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  time_slot    TimeSlot @relation(fields: [time_slot_id], references: [id], onDelete: Cascade)
+  voter        Voter    @relation(fields: [voter_id], references: [id], onDelete: Cascade)
+
+  @@map("votes")
+}
+
+model Voter {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(255)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  votes      Vote[]
+
+  @@map("voters")
+}
