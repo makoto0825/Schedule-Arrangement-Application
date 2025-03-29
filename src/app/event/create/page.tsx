@@ -6,6 +6,10 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { RiDeleteBin6Line } from 'react-icons/ri';
 
 const Page = () => {
+  //Event info
+  const [eventName, setEventName] = useState<string>('');
+  const [eventDescription, setEventDescription] = useState<string>('');
+  //time slot info
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [option, setOption] = useState<string>('');
   const [optionsList, setOptionsList] = useState<string[][]>([]);
@@ -30,6 +34,45 @@ const Page = () => {
     }
   };
 
+  const onClickCreateEvent = async () => {
+    //validate event name and time slots
+    if (eventName === '') {
+      alert('Please enter an event name');
+      return;
+    }
+    if (optionsList.length === 0) {
+      alert('Please add at least one time slot');
+      return;
+    }
+
+    const eventData = {
+      userId: 'acb8a683-f951-469c-9c17-68fa2cfe9a9', //とりあえずハードコーディング
+      eventName: eventName,
+      eventDescription: eventDescription,
+      timeSlots: optionsList,
+    };
+    // Send eventData to the server
+    try {
+      const response = await fetch('/api/createEvent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(eventData),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+        alert('Failed to create event. Please try again.');
+      }
+
+      const data = await response.json();
+      console.log('Success:', data);
+      // return data;
+    } catch (error) {
+      console.error('Error creating event:', error);
+      alert('Failed to create event. Please try again.');
+    }
+  };
+
   return (
     <div className='sm:w-3/4 mx-auto p-6 pb-20'>
       <h2 className='text-xl sm:text-2xl font-semibold py-4'>
@@ -37,13 +80,27 @@ const Page = () => {
       </h2>
       <div className='my-4  sm:w-1/2'>
         <label className='block text-gray-700'>Event name</label>
-        <input type='text' className='w-full mt-1 p-2 border rounded' />
+        <input
+          type='text'
+          className='w-full mt-1 p-2 border rounded'
+          value={eventName}
+          onChange={(e) => {
+            setEventName(e.target.value);
+          }}
+          required
+        />
       </div>
       <div className='my-4 sm:w-3/4'>
         <label className='block text-gray-700'>
           Event description (optional)
         </label>
-        <textarea className='w-full h-[100px]  mt-1 p-2 border rounded'></textarea>
+        <textarea
+          className='w-full h-[100px]  mt-1 p-2 border rounded'
+          value={eventDescription}
+          onChange={(e) => {
+            setEventDescription(e.target.value);
+          }}
+        ></textarea>
       </div>
       <label className='block text-gray-700'>Date /Time options</label>
       <div className='mt-2 block sm:flex sm:justify-between'>
@@ -98,7 +155,10 @@ const Page = () => {
         </div>
       </div>
       <div className='sm:w-3/5 mt-12 flex justify-between'>
-        <button className='w-1/2 px-4 bg-blue-600 text-white rounded'>
+        <button
+          className='w-1/2 px-4 bg-blue-600 text-white rounded'
+          onClick={onClickCreateEvent}
+        >
           Create Event
         </button>
         <button className='w-1/2 px-4 py-4 text-gray-700 '>Cancel</button>
