@@ -1,44 +1,74 @@
-import React from 'react';
-import { CiEdit } from 'react-icons/ci';
+'use client'; // クライアントコンポーネントとして明示
 
-//津賀担当予定
-const page = () => {
-  //ハードコーディング用のデータ
-  const optionsList = [
-    ['January 20th, 2025', '7:00PM ~'],
-    ['January 20th, 2025', 'All Day'],
-    [
-      'January 20th, 2025',
-      'This is an example for a long comment. The long texts are wrapped.This is an example for a long comment. The long texts are wrapped',
-    ],
-    ['January 20th, 2025', 'Day'],
-  ];
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation'; // クエリパラメータを取得する
+
+import { CiEdit } from 'react-icons/ci';
+import { format } from 'date-fns';
+
+type TimeSlot = {
+  event_date: Date;
+  time: string;
+};
+
+const formatDate = (date: Date) => {
+  return format(date, 'MMMM d, yyyy');
+};
+
+const Page = () => {
+  const [eventData, setEventData] = useState({
+    id: null,
+    user_id: '',
+    name: '',
+    description: '',
+    created_at: '',
+    updated_at: '',
+    timeSlots: [],
+  });
+  const searchParams = useSearchParams();
+  const eventId = searchParams.get('eventId');
+
+  const getEventData = async (eventId: string) => {
+    const res = await fetch(`/api/getDetailEvent?eventId=${eventId}`, {
+      method: 'GET',
+      cache: 'no-store',
+    });
+    if (!res.ok) {
+      throw new Error('Failed to fetch data');
+    }
+    const data = await res.json();
+    setEventData(data);
+  };
+
+  useEffect(() => {
+    if (!eventId) return;
+    getEventData(eventId);
+  }, []);
+
   return (
     <div className='m-4 sm:m-20'>
       <div className='flex items-center'>
-        <h1 className='text-2xl font-bold p-2'>Title of Event</h1>
+        <h1 className='text-2xl font-bold p-2'>{eventData.name}</h1>
         <div className='cursor-pointer'>
           <CiEdit size={40} />
         </div>
       </div>
-      <p className='sm:w-3/4 p-2 mb-4 sm:mb-16'>
-        We’re organising a team lunch, and we’d love to find a time that works
-        for everyone! To make scheduling easy, please select a date that you’re
-        available, and optionally add a preferred time or any comments
-      </p>
+      <p className='sm:w-3/4 p-2 mb-4 sm:mb-16'>{eventData.description}</p>
       <div className='bg-white sm:w-2/3 border rounded sm:p-10 h-[400px] overflow-y-auto overflow-x-hidden'>
         <div className='p-2 flex justify-end'>
           <div className='cursor-pointer'>
             <CiEdit size={40} />
           </div>
         </div>
-        {optionsList.map((text, index) => (
+        {eventData.timeSlots.map((timeSlot: TimeSlot, index) => (
           <div
             key={index}
             className='flex border-b flex-wrap border-gray-200 p-4 group'
           >
-            <div className='w-2/5'>{text[0]}</div>
-            <div className='flex-1 break-words'>{text[1]}</div>
+            <div className='w-2/5'>
+              {formatDate(new Date(timeSlot.event_date))}
+            </div>
+            <div className='flex-1 break-words'>{timeSlot.time}</div>
           </div>
         ))}
       </div>
@@ -51,4 +81,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
