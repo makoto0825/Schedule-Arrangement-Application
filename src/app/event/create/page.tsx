@@ -15,6 +15,11 @@ const Page = () => {
   const [optionsList, setOptionsList] = useState<string[][]>([]);
 
   const addOptionClick = () => {
+    //validate time slot
+    if (option === '') {
+      alert('Please enter a time slot');
+      return;
+    }
     if (selectedDate) {
       setOptionsList([
         ...optionsList,
@@ -46,7 +51,7 @@ const Page = () => {
     }
 
     const eventData = {
-      userId: 'acb8a683-f951-469c-9c17-68fa2cfe9a9', //とりあえずハードコーディング
+      userId: 'acb8a683-f951-469c-9c17-68fa2cfe9a91', //とりあえずハードコーディング
       eventName: eventName,
       eventDescription: eventDescription,
       timeSlots: optionsList,
@@ -60,12 +65,14 @@ const Page = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
         alert('Failed to create event. Please try again.');
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
-
       const data = await response.json();
-      console.log('Success:', data);
+      const eventId = data.eventId;
+      alert('Event created successfully!');
+      window.location.href = `/event/detail?eventId=${eventId}`;
+
       // return data;
     } catch (error) {
       console.error('Error creating event:', error);
@@ -161,7 +168,14 @@ const Page = () => {
         >
           Create Event
         </button>
-        <button className='w-1/2 px-4 py-4 text-gray-700 '>Cancel</button>
+        <button
+          className='w-1/2 px-4 py-4 text-gray-700 '
+          onClick={() => {
+            window.location.href = '/dashboard';
+          }}
+        >
+          Cancel
+        </button>
       </div>
     </div>
   );
