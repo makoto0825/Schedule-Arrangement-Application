@@ -8,7 +8,7 @@ export async function main() {
     await prisma.$connect();
   } catch (error) {
     console.error('Error connecting to the database:', error);
-    return Error('Database connection error');
+    throw new Error('Database connection error');
   }
 }
 
