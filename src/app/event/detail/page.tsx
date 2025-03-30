@@ -1,7 +1,7 @@
-'use client'; // クライアントコンポーネントとして明示
+'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation'; // クエリパラメータを取得する
+import { useSearchParams } from 'next/navigation';
 
 import { CiEdit } from 'react-icons/ci';
 import { format } from 'date-fns';
