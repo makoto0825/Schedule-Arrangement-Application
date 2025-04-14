@@ -156,7 +156,15 @@ const Page = () => {
             >
               <div className='w-2/5'>{text[0]}</div>
               <div className='flex-1 break-words'>{text[1]}</div>
-              <RiDeleteBin6Line className='opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
+              <RiDeleteBin6Line
+                className='cursor-pointer  opacity-0 group-hover:opacity-100 transition-opacity duration-300'
+                onClick={() => {
+                  const newOptionsList = optionsList.filter(
+                    (_, i) => i !== index
+                  );
+                  setOptionsList(newOptionsList);
+                }}
+              />
             </div>
           ))}
         </div>
