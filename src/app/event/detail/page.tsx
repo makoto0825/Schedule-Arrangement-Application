@@ -96,12 +96,20 @@ const Page = () => {
           </div>
         ))}
       </div>
-      <div className='text-center sm:text-left'>
+      <div className='sm:w-1/3 text-center sm:text-left flex justify-between'>
         <button
           onClick={handleCopyLink}
-          className='text-2xl sm:w-1/4 mt-10 p-4 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors'
+          className='text-2xl sm:w-2/4  mt-10 p-4 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors'
         >
           {copySuccess ? 'Link copied!' : 'Share the link'}
+        </button>
+        <button
+          className='text-2xl sm:w-2/5  mt-10 p-4 bg-green-400 text-white rounded hover:bg-green-700 transition-colors'
+          onClick={() => {
+            window.location.href = `/vote?eventId=${eventId}`;
+          }}
+        >
+          Vote
         </button>
       </div>
     </div>
