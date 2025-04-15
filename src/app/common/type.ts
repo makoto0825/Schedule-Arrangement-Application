@@ -1,6 +1,6 @@
 export type Event = {
   id: number;
-  title: string;
-  dateOptions: Date[];
-  respondents: number;
+  name: string;
+  // dateOptions: Date[];
+  // respondents: number;
 };

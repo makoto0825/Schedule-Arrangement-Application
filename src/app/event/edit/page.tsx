@@ -24,6 +24,9 @@ const Page = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [option, setOption] = useState<string>('');
   const [optionsList, setOptionsList] = useState<string[][]>([]);
+  const [originalOptionsList, setOriginalOptionsList] = useState<string[][]>(
+    []
+  );
 
   const searchParams = useSearchParams();
   const eventId = searchParams.get('eventId');
@@ -42,14 +45,16 @@ const Page = () => {
     setEventDescription(data.description);
     const formattedList = data.timeSlots.map((slot: TimeSlot) => {
       const date = format(new Date(slot.event_date), 'MMMM do, yyyy'); // 例: "March 30th, 2025"
-      return [date, slot.time];
+      return [date, slot.time, slot.id];
     });
     setOptionsList(formattedList);
+    setOriginalOptionsList(formattedList);
   };
 
   useEffect(() => {
     if (!eventId) return;
     getEventData(eventId);
+    console.log('eventId', eventId);
   }, []);
 
   const addOptionClick = () => {
@@ -88,13 +93,19 @@ const Page = () => {
       return;
     }
 
+    //削除された時間スロットを取得
+    const deletedTimeSlots = originalOptionsList.filter(
+      (slot) => !optionsList.includes(slot)
+    );
+
     const eventData = {
       id: eventId,
       eventName: eventName,
       eventDescription: eventDescription,
       timeSlots: optionsList,
+      deletedTimeSlots: deletedTimeSlots,
     };
-    // Send eventData to the server
+    //Send eventData to the server
     try {
       const response = await fetch('/api/updateEvent', {
         method: 'PUT',
