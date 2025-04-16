@@ -1,5 +1,6 @@
 import Image from "next/image";
-import React from "react";
+import Link from "next/link";
+import { login } from "./actions";
 
 const page = () => {
   return (
@@ -18,7 +19,7 @@ const page = () => {
             </h2>
           </div>
           <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <form action="#" method="POST" className="space-y-6">
+            <form className="space-y-6">
               <div>
                 <label htmlFor="email" className="block text-sm/6 font-medium">
                   Email address
@@ -66,6 +67,7 @@ const page = () => {
 
               <div>
                 <button
+                  formAction={login}
                   type="submit"
                   className="flex w-full justify-center rounded-md bg-primary px-3 py-2 text-sm/6 font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
                 >
@@ -76,12 +78,12 @@ const page = () => {
 
             <p className="mt-10 text-center text-sm/6 text-foreground-weak">
               Not a member?{" "}
-              <a
-                href="#"
+              <Link
+                href="/signup"
                 className="font-semibold text-primary hover:text-blue-500"
               >
                 Sign up now!
-              </a>
+              </Link>
             </p>
           </div>
         </div>
