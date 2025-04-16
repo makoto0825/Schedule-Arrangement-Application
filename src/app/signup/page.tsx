@@ -1,7 +1,8 @@
+import { signup } from "./actions";
 import Image from "next/image";
-import React from "react";
+import Link from "next/link";
 
-const page = () => {
+const Page = () => {
   return (
     <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8 bg-primary relative before:content-[''] before:absolute before:inset-0 before:bg-[url('/images/noise-light.png')] before:bg-repeat">
       <div className="relative mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
@@ -14,11 +15,11 @@ const page = () => {
               alt="Plansmart"
             />
             <h2 className="mt-10 text-2xl font-bold tracking-tight text-primary">
-              Sign in to your account
+              Effortlessly find the best time to plan events with friends.
             </h2>
           </div>
           <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-            <form action="#" method="POST" className="space-y-6">
+            <form className="space-y-6">
               <div>
                 <label htmlFor="email" className="block text-sm/6 font-medium">
                   Email address
@@ -43,14 +44,6 @@ const page = () => {
                   >
                     Password
                   </label>
-                  <div className="text-sm">
-                    <a
-                      href="#"
-                      className="font-medium text-primary hover:text-blue-500"
-                    >
-                      Forgot password?
-                    </a>
-                  </div>
                 </div>
                 <div className="mt-2">
                   <input
@@ -68,20 +61,21 @@ const page = () => {
                 <button
                   type="submit"
                   className="flex w-full justify-center rounded-md bg-primary px-3 py-2 text-sm/6 font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                  formAction={signup}
                 >
-                  Sign in
+                  Sign Up
                 </button>
               </div>
             </form>
 
             <p className="mt-10 text-center text-sm/6 text-foreground-weak">
-              Not a member?{" "}
-              <a
-                href="#"
+              Already have an account?{" "}
+              <Link
+                href="/login"
                 className="font-semibold text-primary hover:text-blue-500"
               >
-                Sign up now!
-              </a>
+                Sign in here.
+              </Link>
             </p>
           </div>
         </div>
@@ -90,4 +84,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
