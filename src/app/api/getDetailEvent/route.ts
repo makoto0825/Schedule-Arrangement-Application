@@ -43,18 +43,25 @@ export async function GET(request: Request) {
         { status: 404 }
       );
     }
+
+    const sortedTimeSlots = [...timeSlots].sort((a, b) => {
+      const aDate = new Date(a.event_date);
+      const bDate = new Date(b.event_date);
+      return aDate.getTime() - bDate.getTime();
+    });
+
     // create eventData object with time slots
     const eventDataWithTimeSlots = {
       ...eventData,
-      time_slots: timeSlots,
+      time_slots: sortedTimeSlots,
     };
 
     // Check if we need to fetch votes
-    const shouldFetchVotes = searchParams.get("withVotes");
-    if (shouldFetchVotes === "true") {
+    const shouldFetchVotes = searchParams.get('withVotes');
+    if (shouldFetchVotes === 'true') {
       // Fetch votes associated with the time slots
       const timeSlotsWithVotes = await Promise.all(
-        timeSlots.map(async (slot) => {
+        sortedTimeSlots.map(async (slot) => {
           const votes = await prisma.vote.findMany({
             where: { time_slot_id: slot.id },
           });
@@ -65,7 +72,7 @@ export async function GET(request: Request) {
               });
               if (!voter) {
                 return NextResponse.json(
-                  { message: "Voter not found" },
+                  { message: 'Voter not found' },
                   { status: 404 }
                 );
               }
