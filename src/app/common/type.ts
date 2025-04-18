@@ -7,6 +7,10 @@ export type Event = {
   // respondents: number;
 };
 
+export type EventWithDetails = Event & {
+  time_slots: TimeSlotWithVotes[];
+};
+
 export type TimeSlot = {
   id: number;
   event_id: number;
@@ -14,4 +18,18 @@ export type TimeSlot = {
   time: string;
   created_at: Date;
   updated_at: Date;
+};
+
+// Type for Frontend
+export type Vote = {
+  id: number;
+  status: string;
+  voter_id: number;
+  voter_name: string;
+  created_at: Date;
+  updated_at: Date;
+};
+
+export type TimeSlotWithVotes = TimeSlot & {
+  votes: Vote[];
 };

@@ -2,26 +2,29 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { HiOutlinePencil } from "react-icons/hi";
-import { Event } from "../common/type";
+import { EventWithDetails } from "../common/type";
 import { TimeSlots } from "./TimeSlots";
 import Link from "next/link";
 
 const Page = () => {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [event, setEvent] = useState<Event | null>(null);
+  const [event, setEvent] = useState<EventWithDetails | null>(null);
   const searchParams = useSearchParams();
   const eventId = searchParams.get("eventId");
 
   const getEventData = async (eventId: string) => {
     try {
-      const res = await fetch(`/api/getDetailEvent?eventId=${eventId}`, {
-        method: "GET",
-        cache: "no-store",
-      });
+      const res = await fetch(
+        `/api/getDetailEvent?eventId=${eventId}&withVotes=true`,
+        {
+          method: "GET",
+          cache: "no-store",
+        }
+      );
       if (!res.ok) {
         throw new Error("Failed to fetch data");
       }
-      const data = await res.json();
+      const data = (await res.json()) as EventWithDetails;
       setEvent(data);
     } catch (error) {
       console.error("Error fetching event data:", error);
