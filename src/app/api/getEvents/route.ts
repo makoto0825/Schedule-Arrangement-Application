@@ -37,8 +37,17 @@ export async function GET(request: Request) {
         { status: 404 }
       );
     }
+    //eventsにtime_slotsを追加
+    const eventsWithTimeSlots = await Promise.all(
+      events.map(async (event) => {
+        const timeSlots = await prisma.timeSlot.findMany({
+          where: { event_id: event.id },
+        });
+        return { ...event, time_slots: timeSlots };
+      })
+    );
 
-    return NextResponse.json(events, { status: 200 });
+    return NextResponse.json(eventsWithTimeSlots, { status: 200 });
   } catch (error) {
     console.error('Error fetching event data:', error);
     return NextResponse.json(
