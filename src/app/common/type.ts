@@ -20,16 +20,29 @@ export type TimeSlot = {
   updated_at: Date;
 };
 
-// Type for Frontend
+// Type for Frontend to Show
 export type Vote = {
   id: number;
-  status: string;
+  availability: Availability;
   voter_id: number;
   voter_name: string;
   created_at: Date;
   updated_at: Date;
 };
 
+export type Availability = "available" | "unavailable" | "unknown";
+
 export type TimeSlotWithVotes = TimeSlot & {
   votes: Vote[];
+};
+
+// Type to send to Backend
+export type VoteData = {
+  voterName: string;
+  availabilities: TimeSlotAvailability[];
+};
+
+export type TimeSlotAvailability = {
+  time_slot_id: TimeSlot["id"];
+  availability: Availability;
 };

@@ -1,20 +1,50 @@
 "use client";
 import { formatDate } from "date-fns";
 import { HiCheck, HiOutlineX } from "react-icons/hi";
-import { TimeSlot } from "../common/type";
+import { Availability, TimeSlot, TimeSlotAvailability } from "../common/type";
 import { useState } from "react";
+import { AvailabilityOptions } from "./AvailabilityOptions";
 
 type Props = {
   slots: TimeSlot[];
 };
 
 type Mode = "view" | "add";
+type Vote = {
+  voterId: number | undefined; // undefined if adding
+  availabilities: TimeSlotAvailability[];
+};
 
 export const TimeSlots = ({ slots }: Props) => {
   const [mode, setMode] = useState<Mode>("view");
+  const [vote, setVote] = useState<Vote | null>(null);
 
   const startAdding = () => {
     setMode("add");
+    setVote({
+      voterId: undefined,
+      availabilities: slots.map((slot) => ({
+        time_slot_id: slot.id,
+        availability: "unknown",
+      })),
+    });
+  };
+
+  const onChangeAvailability = (slotId: number, availability: Availability) => {
+    if (!vote) return;
+    const newVote = { ...vote };
+    const index = newVote.availabilities.findIndex(
+      (availability) => availability.time_slot_id === slotId
+    );
+
+    if (index !== -1) {
+      newVote.availabilities[index] = {
+        ...newVote.availabilities[index],
+        availability,
+      };
+
+      setVote(newVote);
+    }
   };
 
   return (
@@ -86,9 +116,57 @@ export const TimeSlots = ({ slots }: Props) => {
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-center text-gray-500">
                       0
                     </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"></td>
+                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      {mode === "add" && vote && (
+                        <AvailabilityOptions
+                          selectedOption={
+                            vote.availabilities.find(
+                              (availability) =>
+                                availability.time_slot_id === slot.id
+                            )!.availability
+                          }
+                          onChange={(value) => {
+                            onChangeAvailability(
+                              slot.id,
+                              value as Availability
+                            );
+                          }}
+                        />
+                      )}
+                    </td>
                   </tr>
                 ))}
+                {mode === "add" && vote && (
+                  <tr className="divide-x divide-gray-200">
+                    <td
+                      colSpan={4}
+                      className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-semibold text-gray-900 sm:pl-6"
+                    ></td>
+                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                      <div className="flex items-center gap-x-10 justify-center">
+                        <button
+                          type="button"
+                          className="button-secondary button"
+                          onClick={() => {
+                            setMode("view");
+                            setVote(null);
+                          }}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          className="button-primary button"
+                          onClick={() => {
+                            console.log(vote);
+                          }}
+                        >
+                          Submit
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
