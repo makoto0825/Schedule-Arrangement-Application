@@ -1,7 +1,10 @@
 "use client";
-import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { HiOutlinePencil } from "react-icons/hi";
 import { Event } from "../common/type";
+import { TimeSlots } from "./TimeSlots";
+import Link from "next/link";
 
 const Page = () => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -34,11 +37,27 @@ const Page = () => {
   }, []);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
       {event ? (
         <div>
-          <h1 className="title mb-6">{event.name}</h1>
-          <p className="mb-8">{event.description}</p>
+          <div className="sm:flex sm:items-center">
+            <div className="sm:flex-auto">
+              <h1 className="title">{event.name}</h1>
+              <p className="mt-2 text-sm text-foreground-weak">
+                {event.description}
+              </p>
+            </div>
+            <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+              <Link
+                href={`/event/detail?eventId=${eventId}`}
+                className="button-primary button-with-icon"
+              >
+                <HiOutlinePencil />
+                Organizer View
+              </Link>
+            </div>
+          </div>
+          <TimeSlots slots={event.time_slots} />
         </div>
       ) : isLoaded ? (
         <div className="flex justify-center items-center h-screen">
