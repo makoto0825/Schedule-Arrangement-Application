@@ -36,6 +36,7 @@ export async function GET(request: Request) {
     // Fetch time slots associated with the event
     const timeSlots = await prisma.timeSlot.findMany({
       where: { event_id: Number(eventId) },
+      orderBy: { event_date: 'asc' },
     });
     if (!timeSlots) {
       return NextResponse.json(
@@ -44,16 +45,10 @@ export async function GET(request: Request) {
       );
     }
 
-    const sortedTimeSlots = [...timeSlots].sort((a, b) => {
-      const aDate = new Date(a.event_date);
-      const bDate = new Date(b.event_date);
-      return aDate.getTime() - bDate.getTime();
-    });
-
     // create eventData object with time slots
     const eventDataWithTimeSlots = {
       ...eventData,
-      time_slots: sortedTimeSlots,
+      time_slots: timeSlots,
     };
 
     // Check if we need to fetch votes
@@ -61,9 +56,10 @@ export async function GET(request: Request) {
     if (shouldFetchVotes === 'true') {
       // Fetch votes associated with the time slots
       const timeSlotsWithVotes = await Promise.all(
-        sortedTimeSlots.map(async (slot) => {
+        timeSlots.map(async (slot) => {
           const votes = await prisma.vote.findMany({
             where: { time_slot_id: slot.id },
+            orderBy: { created_at: 'desc' },
           });
           const votesWithVoterName = await Promise.all(
             votes.map(async (v) => {
