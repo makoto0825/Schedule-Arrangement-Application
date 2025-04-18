@@ -46,7 +46,7 @@ export async function GET(request: Request) {
     // create eventData object with time slots
     const eventDataWithTimeSlots = {
       ...eventData,
-      timeSlots: timeSlots,
+      time_slots: timeSlots,
     };
 
     return NextResponse.json(eventDataWithTimeSlots, { status: 200 });

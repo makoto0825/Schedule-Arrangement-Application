@@ -5,26 +5,14 @@ import { useSearchParams } from 'next/navigation';
 
 import { CiEdit } from 'react-icons/ci';
 import { format } from 'date-fns';
-
-type TimeSlot = {
-  event_date: Date;
-  time: string;
-};
+import { Event } from '../../common/type';
 
 const formatDate = (date: Date) => {
   return format(date, 'MMMM d, yyyy');
 };
 
 const Page = () => {
-  const [eventData, setEventData] = useState({
-    id: null,
-    user_id: '',
-    name: '',
-    description: '',
-    created_at: '',
-    updated_at: '',
-    timeSlots: [],
-  });
+  const [eventData, setEventData] = useState<Event|null>(null);
   const searchParams = useSearchParams();
   const eventId = searchParams.get('eventId');
   const [copySuccess, setCopySuccess] = useState(false);
@@ -59,6 +47,10 @@ const Page = () => {
     }
   };
 
+  if (!eventData) {
+    return <div className='flex justify-center items-center h-screen'>Loading...</div>;
+  }
+
   return (
     <div className='m-4 sm:m-20'>
       <div className='flex items-center'>
@@ -84,7 +76,7 @@ const Page = () => {
             <CiEdit size={40} />
           </div>
         </div>
-        {eventData.timeSlots.map((timeSlot: TimeSlot, index) => (
+        {eventData.time_slots.map((timeSlot, index) => (
           <div
             key={index}
             className='flex border-b flex-wrap border-gray-200 p-4 group'
