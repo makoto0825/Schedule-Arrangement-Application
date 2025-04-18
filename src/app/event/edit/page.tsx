@@ -54,7 +54,6 @@ const Page = () => {
   useEffect(() => {
     if (!eventId) return;
     getEventData(eventId);
-    console.log('eventId', eventId);
   }, []);
 
   const addOptionClick = () => {
@@ -74,6 +73,7 @@ const Page = () => {
             weekday: 'long',
           }),
           option,
+          '',
         ],
       ]);
       setOption('');
@@ -93,16 +93,18 @@ const Page = () => {
       return;
     }
 
-    //削除された時間スロットを取得
+    //オリジナルの時間スロットから、optionsListに含まれていないものを削除
     const deletedTimeSlots = originalOptionsList.filter(
       (slot) => !optionsList.includes(slot)
     );
+    //optionsListから[2]が""のものだけ抽出
+    const newTimeSlots = optionsList.filter((slot) => slot[2] == '');
 
     const eventData = {
       id: eventId,
       eventName: eventName,
       eventDescription: eventDescription,
-      timeSlots: optionsList,
+      timeSlots: newTimeSlots,
       deletedTimeSlots: deletedTimeSlots,
     };
     //Send eventData to the server
