@@ -33,6 +33,12 @@ const Page = () => {
     }
   };
 
+  const refetchData = async () => {
+    if (!eventId) return;
+    setIsLoaded(false);
+    await getEventData(eventId);
+  };
+
   useEffect(() => {
     console.log("Event ID:", eventId);
     if (!eventId) return;
@@ -60,7 +66,7 @@ const Page = () => {
               </Link>
             </div>
           </div>
-          <TimeSlots slots={event.time_slots} />
+          <TimeSlots slots={event.time_slots} onVoteChange={refetchData} />
         </div>
       ) : isLoaded ? (
         <div className="flex justify-center items-center h-screen">

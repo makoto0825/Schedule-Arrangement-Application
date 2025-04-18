@@ -7,15 +7,17 @@ import { AvailabilityOptions } from "./AvailabilityOptions";
 
 type Props = {
   slots: TimeSlot[];
+  onVoteChange: () => void;
 };
 
 type Mode = "view" | "add";
 type Vote = {
   voterId: number | undefined; // undefined if adding
+  voterName: string;
   availabilities: TimeSlotAvailability[];
 };
 
-export const TimeSlots = ({ slots }: Props) => {
+export const TimeSlots = ({ slots, onVoteChange }: Props) => {
   const [mode, setMode] = useState<Mode>("view");
   const [vote, setVote] = useState<Vote | null>(null);
 
@@ -23,11 +25,44 @@ export const TimeSlots = ({ slots }: Props) => {
     setMode("add");
     setVote({
       voterId: undefined,
+      voterName: "",
       availabilities: slots.map((slot) => ({
         time_slot_id: slot.id,
         availability: "unknown",
       })),
     });
+  };
+
+  const resetEditingState = () => {
+    setMode("view");
+    setVote(null);
+  };
+
+  const submitVote = async () => {
+    if (!vote) return;
+
+    if (!vote.voterName) {
+      alert("Please enter your name");
+      return;
+    }
+
+    if (!vote.voterId) {
+      const response = await fetch("/api/createVotesWithVoter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(vote),
+      });
+
+      if (response.ok) {
+        resetEditingState();
+      } else {
+        console.error("Failed to submit vote");
+      }
+    }
+
+    onVoteChange();
   };
 
   const onChangeAvailability = (slotId: number, availability: Availability) => {
@@ -83,11 +118,18 @@ export const TimeSlots = ({ slots }: Props) => {
                     scope="col"
                     className="px-3 py-3.5 align-middle text-center text-sm font-semibold text-gray-900"
                   >
-                    {mode === "add" ? (
+                    {mode === "add" && vote ? (
                       <input
                         type="text"
-                        className="input-text"
+                        className="input-text w-auto m-auto"
                         placeholder="Your Name"
+                        value={vote.voterName}
+                        onChange={(e) => {
+                          setVote({
+                            ...vote,
+                            voterName: e.target.value,
+                          });
+                        }}
                       />
                     ) : (
                       <button
@@ -147,19 +189,14 @@ export const TimeSlots = ({ slots }: Props) => {
                         <button
                           type="button"
                           className="button-secondary button"
-                          onClick={() => {
-                            setMode("view");
-                            setVote(null);
-                          }}
+                          onClick={resetEditingState}
                         >
                           Cancel
                         </button>
                         <button
                           type="button"
                           className="button-primary button"
-                          onClick={() => {
-                            console.log(vote);
-                          }}
+                          onClick={submitVote}
                         >
                           Submit
                         </button>
