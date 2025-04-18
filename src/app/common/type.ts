@@ -33,12 +33,13 @@ export type Vote = {
 export type Availability = "available" | "unavailable" | "unknown";
 
 export type TimeSlotWithVotes = TimeSlot & {
+  is: boolean;
   votes: Vote[];
 };
 
 // Type to send to Backend
 export type VoteData = {
-  voterName: string;
+  voter_name: string;
   availabilities: TimeSlotAvailability[];
 };
 

@@ -15,14 +15,14 @@ export async function main() {
 
 export async function POST(request: Request) {
   const data = await request.json();
-  const { voterName, availabilities } = data as VoteData;
+  const { voter_name, availabilities } = data as VoteData;
 
   try {
     await main();
     //insert voter data into the database
     const voterPost = await prisma.voter.create({
       data: {
-        name: voterName,
+        name: voter_name,
       },
     });
 

@@ -1,19 +1,23 @@
 "use client";
 import { formatDate } from "date-fns";
 import { HiCheck, HiOutlineX } from "react-icons/hi";
-import { Availability, TimeSlot, TimeSlotAvailability } from "../common/type";
+import {
+  Availability,
+  TimeSlotAvailability,
+  TimeSlotWithVotes,
+} from "../common/type";
 import { useState } from "react";
 import { AvailabilityOptions } from "./AvailabilityOptions";
 
 type Props = {
-  slots: TimeSlot[];
+  slots: TimeSlotWithVotes[];
   onVoteChange: () => void;
 };
 
 type Mode = "view" | "add";
 type Vote = {
   voterId: number | undefined; // undefined if adding
-  voterName: string;
+  voter_name: string;
   availabilities: TimeSlotAvailability[];
 };
 
@@ -25,7 +29,7 @@ export const TimeSlots = ({ slots, onVoteChange }: Props) => {
     setMode("add");
     setVote({
       voterId: undefined,
-      voterName: "",
+      voter_name: "",
       availabilities: slots.map((slot) => ({
         time_slot_id: slot.id,
         availability: "unknown",
@@ -41,7 +45,7 @@ export const TimeSlots = ({ slots, onVoteChange }: Props) => {
   const submitVote = async () => {
     if (!vote) return;
 
-    if (!vote.voterName) {
+    if (!vote.voter_name) {
       alert("Please enter your name");
       return;
     }
@@ -123,11 +127,11 @@ export const TimeSlots = ({ slots, onVoteChange }: Props) => {
                         type="text"
                         className="input-text w-auto m-auto"
                         placeholder="Your Name"
-                        value={vote.voterName}
+                        value={vote.voter_name}
                         onChange={(e) => {
                           setVote({
                             ...vote,
-                            voterName: e.target.value,
+                            voter_name: e.target.value,
                           });
                         }}
                       />
