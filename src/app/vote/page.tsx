@@ -53,7 +53,7 @@ const Page = () => {
             <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
               <Link
                 href={`/event/detail?eventId=${eventId}`}
-                className="button-primary button-with-icon"
+                className="button-with-icon button-secondary"
               >
                 <HiOutlinePencil />
                 Organizer View

@@ -1,12 +1,22 @@
+"use client";
 import { formatDate } from "date-fns";
-import { HiCheck, HiOutlineX, HiOutlinePlusSm } from "react-icons/hi";
+import { HiCheck, HiOutlineX } from "react-icons/hi";
 import { TimeSlot } from "../common/type";
+import { useState } from "react";
 
 type Props = {
   slots: TimeSlot[];
 };
 
+type Mode = "view" | "add";
+
 export const TimeSlots = ({ slots }: Props) => {
+  const [mode, setMode] = useState<Mode>("view");
+
+  const startAdding = () => {
+    setMode("add");
+  };
+
   return (
     <div className="mt-8 flow-root">
       <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
@@ -43,12 +53,21 @@ export const TimeSlots = ({ slots }: Props) => {
                     scope="col"
                     className="px-3 py-3.5 align-middle text-center text-sm font-semibold text-gray-900"
                   >
-                    <button
-                      type="button"
-                      className="button-rounded button-primary"
-                    >
-                      <HiOutlinePlusSm aria-hidden="true" className="size-5" />
-                    </button>
+                    {mode === "add" ? (
+                      <input
+                        type="text"
+                        className="input-text"
+                        placeholder="Your Name"
+                      />
+                    ) : (
+                      <button
+                        type="button"
+                        className="button-primary button mx-auto"
+                        onClick={startAdding}
+                      >
+                        Set My Availability
+                      </button>
+                    )}
                   </th>
                 </tr>
               </thead>
