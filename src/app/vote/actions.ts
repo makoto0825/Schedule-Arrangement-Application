@@ -79,3 +79,13 @@ export const updateVotesOnDB = async (voter: UpdateVotesData) => {
     throw new Error('Failed to update data');
   }
 };
+
+export const deleteVoterWithVotesOnDB = async (voterId: number) => {
+  const res = await fetch(`/api/deleteVoterWithVotes?voterId=${voterId}`, {
+    method: 'DELETE',
+  });
+
+  if (!res.ok) {
+    throw new Error('Failed to delete data');
+  }
+};
