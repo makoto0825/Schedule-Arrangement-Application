@@ -2,6 +2,7 @@ import {
   CreateVotesData,
   EventWithDetails,
   TimeSlotWithVotes,
+  TimeSlotWithVotesAndCounts,
   UpdateVotesData,
   VoterWithVotes,
 } from '../common/type';
@@ -19,22 +20,47 @@ export const getEventData = async (eventId: string) => {
       throw new Error('Failed to fetch data');
     }
     const data = (await res.json()) as EventWithDetails;
-    const availabilitiesByVoters = generateVotersWithVotes(data.time_slots);
+    const {
+      voters: availabilitiesByVoters,
+      time_slots,
+      highest_available_count,
+    } = generateDataFromTimeSlots(data.time_slots);
     return {
       ...data,
       voters: availabilitiesByVoters,
+      time_slots,
+      highest_available_count,
     };
   } catch (error) {
     console.error('Error fetching event data:', error);
   }
 };
 
-export const generateVotersWithVotes = (
+export const generateDataFromTimeSlots = (
   timeSlotsWithVotes: TimeSlotWithVotes[]
-): VoterWithVotes[] => {
+): {
+  time_slots: TimeSlotWithVotesAndCounts[];
+  voters: VoterWithVotes[];
+  highest_available_count: number;
+} => {
   const groupedVotes: VoterWithVotes[] = [];
-  timeSlotsWithVotes.forEach((slot) => {
+  let highestAvailableCount = 0;
+  const timeSlotsWithCounts = timeSlotsWithVotes.map((slot) => {
+    const counts: TimeSlotWithVotesAndCounts['counts'] = {
+      available: 0,
+      unavailable: 0,
+      unknown: 0,
+    };
+
     slot.votes.forEach((vote) => {
+      counts[vote.availability]++;
+      if (
+        vote.availability === 'available' &&
+        highestAvailableCount < counts.available
+      ) {
+        highestAvailableCount = counts.available;
+      }
+
       const existingVoter = groupedVotes.find(
         (voter) => voter.id === vote.voter_id
       );
@@ -49,11 +75,21 @@ export const generateVotersWithVotes = (
         });
       }
     });
+
+    return {
+      ...slot,
+      counts,
+    };
   });
 
   // Sort voters by id
   const sortedGroupedVotes = [...groupedVotes].sort((a, b) => a.id - b.id);
-  return sortedGroupedVotes;
+
+  return {
+    time_slots: timeSlotsWithCounts,
+    voters: sortedGroupedVotes,
+    highest_available_count: highestAvailableCount,
+  };
 };
 
 export const createVotesOnDB = async (voter: CreateVotesData) => {

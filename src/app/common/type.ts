@@ -7,8 +7,9 @@ export type Event = {
   // respondents: number;
 };
 
-export type EventWithDetails = Event & {
-  time_slots: TimeSlotWithVotes[];
+export type EventWithDetails = Omit<Event, 'time_slots'> & {
+  time_slots: TimeSlotWithVotesAndCounts[];
+  highest_available_count: number;
 };
 
 export type TimeSlot = {
@@ -33,6 +34,13 @@ export type Availability = 'available' | 'unavailable' | 'unknown';
 
 export type TimeSlotWithVotes = TimeSlot & {
   votes: Vote[];
+};
+
+export type TimeSlotWithVotesAndCounts = TimeSlot & {
+  votes: Vote[];
+  counts: {
+    [key in Availability]: number;
+  };
 };
 
 export type Voter = {

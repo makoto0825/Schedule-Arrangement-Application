@@ -4,7 +4,7 @@ import { HiCheck, HiOutlinePlusSm, HiOutlineX } from 'react-icons/hi';
 import {
   Availability,
   CreateVotesData,
-  TimeSlotWithVotes,
+  TimeSlotWithVotesAndCounts,
   UpdateVotesData,
   Voter,
   VoterWithVotes,
@@ -19,21 +19,26 @@ import {
 import { AlertDialog } from './AlertDialog';
 
 type Props = {
-  slots: TimeSlotWithVotes[];
+  slots: TimeSlotWithVotesAndCounts[];
   voters: VoterWithVotes[];
+  highestAvailableCount: number;
   onVoteChange: () => void;
 };
 
 type Mode = 'view' | 'add' | 'edit';
 
-export const TimeSlots = ({ slots, voters, onVoteChange }: Props) => {
+export const TimeSlots = ({
+  slots,
+  voters,
+  highestAvailableCount,
+  onVoteChange,
+}: Props) => {
   const [mode, setMode] = useState<Mode>('view');
   const [newVotes, setNewVotes] = useState<CreateVotesData | null>(null);
   const [updatingVotes, setUpdatingVotes] = useState<UpdateVotesData | null>(
     null
   );
   const [deletingVoter, setDeletingVoter] = useState<Voter | null>(null);
-
   const startAdding = () => {
     setMode('add');
     setNewVotes({
@@ -146,7 +151,8 @@ export const TimeSlots = ({ slots, voters, onVoteChange }: Props) => {
                         scope="col"
                         className="sticky top-0 z-10 px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
                       >
-                        {formatDate(new Date(slot.event_date), 'MMM dd')}{' '}
+                        {formatDate(new Date(slot.event_date), 'MMM dd')}
+                        {' - '}
                         {slot.time}
                       </th>
                     ))}
@@ -161,19 +167,30 @@ export const TimeSlots = ({ slots, voters, onVoteChange }: Props) => {
                     <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-semibold text-gray-500 sm:pl-6">
                       Total
                     </td>
-                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-semibold text-gray-500 sm:pl-6">
-                      <div className="flex items-center justify-center gap-x-4">
-                        <div className="flex items-center justify-center">
-                          <HiCheck size={16} />: 0
-                        </div>
-                        <div className="flex items-center justify-center">
-                          ?: 0
-                        </div>
-                        <div className="flex items-center justify-center">
-                          <HiOutlineX size={16} />: 0
-                        </div>
-                      </div>
-                    </td>
+                    {slots.map((slot) => {
+                      return (
+                        <td
+                          key={slot.id}
+                          className={`whitespace-nowrap py-4 pl-4 pr-3 text-sm font-semibold text-gray-500 sm:pl-6 ${
+                            highestAvailableCount === slot.counts.available &&
+                            'bg-blue-50 text-blue-500'
+                          }`}
+                        >
+                          <div className="flex items-center justify-center gap-x-4">
+                            <div className="flex items-center justify-center">
+                              <HiCheck size={16} />: {slot.counts.available}
+                            </div>
+                            <div className="flex items-center justify-center">
+                              ?: {slot.counts.unknown}
+                            </div>
+                            <div className="flex items-center justify-center">
+                              <HiOutlineX size={16} />:{' '}
+                              {slot.counts.unavailable}
+                            </div>
+                          </div>
+                        </td>
+                      );
+                    })}
                     <td></td>
                   </tr>
                   {voters.map((voter) => (
@@ -205,7 +222,10 @@ export const TimeSlots = ({ slots, voters, onVoteChange }: Props) => {
                         return (
                           <td
                             key={slot.id}
-                            className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                            className={`whitespace-nowrap px-3 py-4 text-sm text-gray-500 ${
+                              highestAvailableCount === slot.counts.available &&
+                              'bg-blue-50 text-blue-500'
+                            }`}
                           >
                             <div className="flex items-center justify-center">
                               {updatingVotes?.voter_id === voter.id &&

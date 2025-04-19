@@ -54,6 +54,7 @@ const Page = () => {
             </div>
           </div>
           <TimeSlots
+            highestAvailableCount={event.highest_available_count}
             slots={event.time_slots}
             voters={event.voters}
             onVoteChange={fetchData}
