@@ -1,16 +1,18 @@
 'use client';
 import { formatDate } from 'date-fns';
-import { HiCheck, HiOutlineX } from 'react-icons/hi';
+import { HiCheck, HiOutlinePlusSm, HiOutlineX } from 'react-icons/hi';
 import {
   Availability,
   TimeSlotAvailability,
   TimeSlotWithVotes,
+  VoterWithAvailabilities,
 } from '../common/type';
 import { useState } from 'react';
 import { AvailabilityOptions } from './AvailabilityOptions';
 
 type Props = {
   slots: TimeSlotWithVotes[];
+  voters: VoterWithAvailabilities[];
   onVoteChange: () => void;
 };
 
@@ -21,7 +23,7 @@ type Vote = {
   availabilities: TimeSlotAvailability[];
 };
 
-export const TimeSlots = ({ slots, onVoteChange }: Props) => {
+export const TimeSlots = ({ slots, voters, onVoteChange }: Props) => {
   const [mode, setMode] = useState<Mode>('view');
   const [vote, setVote] = useState<Vote | null>(null);
 
@@ -134,17 +136,54 @@ export const TimeSlots = ({ slots, onVoteChange }: Props) => {
                   </td>
                   <td></td>
                 </tr>
+                {voters.map((voter) => (
+                  <tr key={voter.id} className="divide-x divide-gray-200">
+                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-semibold text-gray-900 sm:pl-6">
+                      {voter.name}
+                    </td>
+                    {slots.map((slot) => {
+                      const availability = voter.availabilities.find(
+                        (a) => a.time_slot_id === slot.id
+                      )?.availability;
+                      return (
+                        <td
+                          key={slot.id}
+                          className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                        >
+                          <div className="flex items-center justify-center">
+                            {availability === 'available' ? (
+                              <HiCheck size={16} />
+                            ) : availability === 'unknown' ? (
+                              '?'
+                            ) : (
+                              <HiOutlineX size={16} />
+                            )}
+                          </div>
+                        </td>
+                      );
+                    })}
+                    <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-center text-sm font-semibold sm:pr-6">
+                      <button
+                        type="button"
+                        className="text-primary hover:text-blue-900"
+                      >
+                        Edit
+                      </button>
+                    </td>
+                  </tr>
+                ))}
                 {mode === 'view' && (
                   <tr className="divide-x divide-gray-200">
                     <td
                       colSpan={slots.length + 2}
-                      className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                      className="whitespace-nowrap text-center px-3 py-4 text-sm text-gray-500"
                     >
                       <button
                         type="button"
-                        className="button-primary button m-auto"
+                        className="button-primary button-with-icon m-auto"
                         onClick={startAdding}
                       >
+                        <HiOutlinePlusSm className="text-white" />
                         Add My Availability
                       </button>
                     </td>

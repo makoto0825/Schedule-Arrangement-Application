@@ -2,13 +2,48 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { HiOutlinePencil } from 'react-icons/hi';
-import { EventWithDetails } from '../common/type';
+import {
+  EventWithDetails,
+  TimeSlotWithVotes,
+  VoterWithAvailabilities,
+} from '../common/type';
 import { TimeSlots } from './TimeSlots';
 import Link from 'next/link';
 
+const generateAvailabilitiesByVoters = (
+  timeSlotsWithVotes: TimeSlotWithVotes[]
+): VoterWithAvailabilities[] => {
+  const groupedVotes: VoterWithAvailabilities[] = [];
+  timeSlotsWithVotes.forEach((slot) => {
+    slot.votes.forEach((vote) => {
+      const timeSlotAvailability = {
+        time_slot_id: slot.id,
+        availability: vote.availability,
+      };
+
+      const existingVoter = groupedVotes.find(
+        (voter) => voter.id === vote.voter_id
+      );
+
+      if (existingVoter) {
+        existingVoter.availabilities.push(timeSlotAvailability);
+      } else {
+        groupedVotes.push({
+          id: vote.voter_id,
+          name: vote.voter_name,
+          availabilities: [timeSlotAvailability],
+        });
+      }
+    });
+  });
+  return groupedVotes;
+};
+
 const Page = () => {
   const [isLoaded, setIsLoaded] = useState(false);
-  const [event, setEvent] = useState<EventWithDetails | null>(null);
+  const [event, setEvent] = useState<
+    (EventWithDetails & { voters: VoterWithAvailabilities[] }) | null
+  >(null);
   const searchParams = useSearchParams();
   const eventId = searchParams.get('eventId');
 
@@ -25,7 +60,13 @@ const Page = () => {
         throw new Error('Failed to fetch data');
       }
       const data = (await res.json()) as EventWithDetails;
-      setEvent(data);
+      const availabilitiesByVoters = generateAvailabilitiesByVoters(
+        data.time_slots
+      );
+      setEvent({
+        ...data,
+        voters: availabilitiesByVoters,
+      });
     } catch (error) {
       console.error('Error fetching event data:', error);
     } finally {
@@ -66,7 +107,11 @@ const Page = () => {
               </Link>
             </div>
           </div>
-          <TimeSlots slots={event.time_slots} onVoteChange={refetchData} />
+          <TimeSlots
+            slots={event.time_slots}
+            voters={event.voters}
+            onVoteChange={refetchData}
+          />
         </div>
       ) : isLoaded ? (
         <div className="flex justify-center items-center h-screen">
