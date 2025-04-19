@@ -7,7 +7,6 @@ const Dashboard = ({ userId }: { userId: string }) => {
   const [events, setEvents] = useState<Event[]>([]);
 
   const getEvents = async () => {
-    //仮としてユーザーID:acb8a683-f951-469c-9c17-68fa2cfe9a91を渡す
     const res = await fetch(`/api/getEvents?userId=${userId}`, {
       method: 'GET',
       cache: 'no-store',
@@ -23,8 +22,8 @@ const Dashboard = ({ userId }: { userId: string }) => {
   return (
     <div className='h-full'>
         {/* Upcoming Events */}
-        <div className='mb-20  mx-auto '>
-          <h2 className='text-xl font-semibold mb-4'>Upcoming Events</h2>
+        <div className='mb-20'>
+          <h2 className='title mb-4'>Upcoming Events</h2>
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
             {events
               .filter((event) => {
@@ -42,8 +41,8 @@ const Dashboard = ({ userId }: { userId: string }) => {
         </div>
 
         {/* Past Events */}
-        <div className='mb-8 mx-auto'>
-          <h2 className='text-xl font-semibold mb-4'>Past Events</h2>
+        <div className='mb-8'>
+          <h2 className='title mb-4'>Past Events</h2>
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4'>
             {events
               .filter((event) =>

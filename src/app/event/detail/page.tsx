@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-import { CiEdit } from 'react-icons/ci';
+import { HiOutlinePencil } from 'react-icons/hi';
 import { format } from 'date-fns';
 import { Event } from '../../common/type';
 
@@ -53,18 +53,18 @@ const Page = () => {
 
   return (
     <div className=''>
-      <div className='flex items-center'>
-        <h1 className='text-2xl font-bold p-2'>{eventData.name}</h1>
+      <div className='flex items-center gap-3'>
+        <h1 className='title'>{eventData.name}</h1>
         <div
           className='cursor-pointer'
           onClick={() => {
             window.location.href = `/event/edit?eventId=${eventData.id}`;
           }}
         >
-          <CiEdit size={40} />
+          <HiOutlinePencil size={24} />
         </div>
       </div>
-      <p className='sm:w-3/4 p-2 mb-4 sm:mb-16'>{eventData.description}</p>
+      <p className='sm:w-3/4 p-2 mb-4 sm:mb-8'>{eventData.description}</p>
       <div className='bg-white sm:w-2/3 border rounded sm:p-10 h-[400px] overflow-y-auto overflow-x-hidden'>
         <div className='p-2 flex justify-end'>
           <div
@@ -73,7 +73,7 @@ const Page = () => {
               window.location.href = `/event/edit?eventId=${eventData.id}`;
             }}
           >
-            <CiEdit size={40} />
+            <HiOutlinePencil size={24} />
           </div>
         </div>
         {eventData.time_slots.map((timeSlot, index) => (
@@ -88,22 +88,12 @@ const Page = () => {
           </div>
         ))}
       </div>
-      <div className='sm:w-1/3 text-center sm:text-left flex justify-between'>
-        <button
-          onClick={handleCopyLink}
-          className='text-2xl sm:w-2/4  mt-10 p-4 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors'
-        >
-          {copySuccess ? 'Link copied!' : 'Share the link'}
-        </button>
-        <button
-          className='text-2xl sm:w-2/5  mt-10 p-4 bg-green-400 text-white rounded hover:bg-green-700 transition-colors'
-          onClick={() => {
-            window.location.href = `/vote?eventId=${eventId}`;
-          }}
-        >
-          Vote
-        </button>
-      </div>
+      <button
+        onClick={handleCopyLink}
+        className='button button-primary mt-8'
+      >
+        {copySuccess ? 'Link copied!' : 'Share the link'}
+      </button>
     </div>
   );
 };

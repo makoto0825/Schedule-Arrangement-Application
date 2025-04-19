@@ -22,8 +22,8 @@ const Card = ({ event, color }: CardProps) => {
         enterTo='opacity-100 scale-100'
       >
         <div
-          className={`rounded-2xl border p-4 bg-white text-gray-700 border-t-8 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-lg ${
-            color === 'upcoming' ? ' border-blue-500  ' : ' border-gray-300'
+          className={`rounded-2xl border py-4 px-8 bg-white text-gray-700 border-t-8 cursor-pointer transition-transform transform hover:scale-105 hover:shadow-lg ${
+            color === 'upcoming' ? ' border-primary  ' : ' border-gray-300'
           }`}
         >
           <h3 className='font-semibold text-lg truncate'>{event.name}</h3>

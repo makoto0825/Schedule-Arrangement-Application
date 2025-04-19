@@ -8,7 +8,7 @@ export default function WithHeader({
   return (
     <>
       <Header isLoggedIn={true} />
-      <main className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 container">
+      <main className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 pb-20 container">
         {children}
       </main>
     </>
