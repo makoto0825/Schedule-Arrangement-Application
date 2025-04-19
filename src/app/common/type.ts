@@ -26,8 +26,7 @@ export type Vote = {
   availability: Availability;
   voter_id: number;
   voter_name: string;
-  created_at: Date;
-  updated_at: Date;
+  time_slot_id: number;
 };
 
 export type Availability = 'available' | 'unavailable' | 'unknown';
@@ -36,16 +35,25 @@ export type TimeSlotWithVotes = TimeSlot & {
   votes: Vote[];
 };
 
-export type VoterWithAvailabilities = {
+export type Voter = {
   id: number;
   name: string;
-  availabilities: TimeSlotAvailability[];
+};
+
+export type VoterWithVotes = Voter & {
+  votes: Vote[];
 };
 
 // Type to send to Backend
-export type VoteData = {
-  voter_name: string;
-  availabilities: TimeSlotAvailability[];
+export type CreateVotesData = {
+  voter_name: Voter['name'];
+  votes: TimeSlotAvailability[];
+};
+
+export type UpdateVotesData = {
+  voter_id: Voter['id'];
+  voter_name: Voter['name'];
+  votes: Vote[];
 };
 
 export type TimeSlotAvailability = {

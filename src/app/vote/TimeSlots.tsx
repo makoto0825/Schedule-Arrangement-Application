@@ -3,88 +3,113 @@ import { formatDate } from 'date-fns';
 import { HiCheck, HiOutlinePlusSm, HiOutlineX } from 'react-icons/hi';
 import {
   Availability,
-  TimeSlotAvailability,
+  CreateVotesData,
   TimeSlotWithVotes,
-  VoterWithAvailabilities,
+  UpdateVotesData,
+  VoterWithVotes,
 } from '../common/type';
 import { useState } from 'react';
 import { AvailabilityOptions } from './AvailabilityOptions';
+import { createVotesOnDB, updateVotesOnDB } from './actions';
 
 type Props = {
   slots: TimeSlotWithVotes[];
-  voters: VoterWithAvailabilities[];
+  voters: VoterWithVotes[];
   onVoteChange: () => void;
 };
 
-type Mode = 'view' | 'add';
-type Vote = {
-  voterId: number | undefined; // undefined if adding
-  voter_name: string;
-  availabilities: TimeSlotAvailability[];
-};
+type Mode = 'view' | 'add' | 'edit';
 
 export const TimeSlots = ({ slots, voters, onVoteChange }: Props) => {
   const [mode, setMode] = useState<Mode>('view');
-  const [vote, setVote] = useState<Vote | null>(null);
+  const [newVotes, setNewVotes] = useState<CreateVotesData | null>(null);
+  const [updatingVotes, setUpdatingVotes] = useState<UpdateVotesData | null>(
+    null
+  );
 
   const startAdding = () => {
     setMode('add');
-    setVote({
-      voterId: undefined,
+    setNewVotes({
       voter_name: '',
-      availabilities: slots.map((slot) => ({
+      votes: slots.map((slot) => ({
         time_slot_id: slot.id,
         availability: 'unknown',
       })),
     });
   };
 
-  const resetEditingState = () => {
+  const endAdding = () => {
     setMode('view');
-    setVote(null);
+    setNewVotes(null);
   };
 
-  const submitVote = async () => {
-    if (!vote) return;
+  const startEditing = ({
+    id: voter_id,
+    name: voter_name,
+    votes,
+  }: VoterWithVotes) => {
+    setMode('edit');
+    setUpdatingVotes({
+      voter_id,
+      voter_name,
+      votes: [...votes],
+    });
+  };
 
-    if (!vote.voter_name) {
+  const endEditing = () => {
+    setMode('view');
+    setUpdatingVotes(null);
+  };
+
+  const submitNewVotes = async () => {
+    if (!newVotes) return;
+    if (!newVotes.voter_name) {
       alert('Please enter your name');
       return;
     }
-
-    if (!vote.voterId) {
-      const response = await fetch('/api/createVotesWithVoter', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(vote),
-      });
-
-      if (response.ok) {
-        resetEditingState();
-      } else {
-        console.error('Failed to submit vote');
-      }
-    }
-
+    await createVotesOnDB(newVotes);
+    endAdding();
     onVoteChange();
   };
 
-  const onChangeAvailability = (slotId: number, availability: Availability) => {
-    if (!vote) return;
-    const newVote = { ...vote };
-    const index = newVote.availabilities.findIndex(
-      (availability) => availability.time_slot_id === slotId
-    );
+  const submitUpdateVotes = async () => {
+    if (!updatingVotes) return;
+    await updateVotesOnDB(updatingVotes);
+    endEditing();
+    onVoteChange();
+  };
+
+  const updateAvailabilityForNewVotes = (
+    slotId: number,
+    availability: Availability
+  ) => {
+    if (!newVotes) return;
+    const next = { ...newVotes };
+    const index = next.votes.findIndex((v) => v.time_slot_id === slotId);
 
     if (index !== -1) {
-      newVote.availabilities[index] = {
-        ...newVote.availabilities[index],
+      next.votes[index] = {
+        ...next.votes[index],
         availability,
       };
 
-      setVote(newVote);
+      setNewVotes(next);
+    }
+  };
+
+  const updateAvailabilityForUpdatingVotes = (
+    voteId: number | undefined,
+    availability: Availability
+  ) => {
+    if (!updatingVotes) return;
+    const next = { ...updatingVotes };
+    const index = next.votes.findIndex((v) => v.id === voteId);
+    if (index !== -1) {
+      next.votes[index] = {
+        ...next.votes[index],
+        availability,
+      };
+      setUpdatingVotes(next);
     }
   };
 
@@ -118,7 +143,7 @@ export const TimeSlots = ({ slots, voters, onVoteChange }: Props) => {
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
                 <tr className="divide-x divide-gray-200">
-                  <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-semibold text-gray-900 sm:pl-6">
+                  <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-semibold text-gray-500 sm:pl-6">
                     Total
                   </td>
                   <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-semibold text-gray-500 sm:pl-6">
@@ -138,20 +163,52 @@ export const TimeSlots = ({ slots, voters, onVoteChange }: Props) => {
                 </tr>
                 {voters.map((voter) => (
                   <tr key={voter.id} className="divide-x divide-gray-200">
-                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-semibold text-gray-900 sm:pl-6">
-                      {voter.name}
+                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:px-5">
+                      {updatingVotes?.voter_id === voter.id &&
+                      mode === 'edit' ? (
+                        <input
+                          type="text"
+                          className="input-text"
+                          placeholder="Your Name"
+                          value={updatingVotes.voter_name}
+                          onChange={(e) => {
+                            setUpdatingVotes({
+                              ...updatingVotes,
+                              voter_name: e.target.value,
+                            });
+                          }}
+                        />
+                      ) : (
+                        voter.name
+                      )}
                     </td>
                     {slots.map((slot) => {
-                      const availability = voter.availabilities.find(
-                        (a) => a.time_slot_id === slot.id
-                      )?.availability;
+                      const vote = voter.votes.find(
+                        ({ time_slot_id }) => time_slot_id === slot.id
+                      );
+                      const availability = vote?.availability || 'unknown';
                       return (
                         <td
                           key={slot.id}
                           className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
                         >
                           <div className="flex items-center justify-center">
-                            {availability === 'available' ? (
+                            {updatingVotes?.voter_id === voter.id &&
+                            mode === 'edit' ? (
+                              <AvailabilityOptions
+                                selectedOption={
+                                  updatingVotes.votes.find(
+                                    (v) => v.id === vote?.id
+                                  )!.availability
+                                }
+                                onChange={(value) =>
+                                  updateAvailabilityForUpdatingVotes(
+                                    vote ? vote.id : undefined,
+                                    value
+                                  )
+                                }
+                              />
+                            ) : availability === 'available' ? (
                               <HiCheck size={16} />
                             ) : availability === 'unknown' ? (
                               '?'
@@ -163,12 +220,33 @@ export const TimeSlots = ({ slots, voters, onVoteChange }: Props) => {
                       );
                     })}
                     <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-center text-sm font-semibold sm:pr-6">
-                      <button
-                        type="button"
-                        className="text-primary hover:text-blue-900"
-                      >
-                        Edit
-                      </button>
+                      {updatingVotes?.voter_id === voter.id &&
+                      mode === 'edit' ? (
+                        <div className="flex items-center gap-x-3 justify-center">
+                          <button
+                            type="button"
+                            className="button-secondary button"
+                            onClick={endEditing}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            className="button-primary button"
+                            onClick={submitUpdateVotes}
+                          >
+                            Submit
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          className="text-primary hover:text-blue-900"
+                          onClick={() => startEditing(voter)}
+                        >
+                          Edit
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -189,17 +267,17 @@ export const TimeSlots = ({ slots, voters, onVoteChange }: Props) => {
                     </td>
                   </tr>
                 )}
-                {mode === 'add' && vote && (
+                {mode === 'add' && newVotes && (
                   <tr className="divide-x divide-gray-200">
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900 sm:px-6">
                       <input
                         type="text"
-                        className="input-text w-auto m-auto"
+                        className="input-text"
                         placeholder="Your Name"
-                        value={vote.voter_name}
+                        value={newVotes.voter_name}
                         onChange={(e) => {
-                          setVote({
-                            ...vote,
+                          setNewVotes({
+                            ...newVotes,
                             voter_name: e.target.value,
                           });
                         }}
@@ -212,29 +290,29 @@ export const TimeSlots = ({ slots, voters, onVoteChange }: Props) => {
                       >
                         <AvailabilityOptions
                           selectedOption={
-                            vote.availabilities.find(
+                            newVotes.votes.find(
                               (v) => v.time_slot_id === slot.id
                             )!.availability
                           }
                           onChange={(value) =>
-                            onChangeAvailability(slot.id, value)
+                            updateAvailabilityForNewVotes(slot.id, value)
                           }
                         />
                       </td>
                     ))}
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      <div className="flex items-center gap-x-10 justify-center">
+                      <div className="flex items-center gap-x-3 justify-center">
                         <button
                           type="button"
                           className="button-secondary button"
-                          onClick={resetEditingState}
+                          onClick={endAdding}
                         >
                           Cancel
                         </button>
                         <button
                           type="button"
                           className="button-primary button"
-                          onClick={submitVote}
+                          onClick={submitNewVotes}
                         >
                           Submit
                         </button>
