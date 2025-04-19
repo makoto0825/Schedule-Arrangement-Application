@@ -96,33 +96,63 @@ export const TimeSlots = ({ slots, onVoteChange }: Props) => {
                 <tr className="divide-x divide-gray-200">
                   <th
                     scope="col"
-                    className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
-                  >
-                    Schedule
-                  </th>
+                    className="sticky top-0 z-10 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                  ></th>
+                  {slots.map((slot) => (
+                    <th
+                      key={slot.id}
+                      scope="col"
+                      className="sticky top-0 z-10 px-3 py-3.5 text-center text-sm font-semibold text-gray-900"
+                    >
+                      {formatDate(new Date(slot.event_date), 'MMM dd')}{' '}
+                      {slot.time}
+                    </th>
+                  ))}
                   <th
                     scope="col"
-                    className="px-3 py-3.5 align-middle text-center text-sm font-semibold text-gray-900"
-                  >
-                    <HiCheck className="mx-auto" size={20} />
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3.5 align-middle text-center text-lg font-semibold text-gray-900"
-                  >
-                    ?
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3.5 align-middle text-center text-sm font-semibold text-gray-900"
-                  >
-                    <HiOutlineX className="mx-auto" size={20} />
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-3 py-3.5 align-middle text-center text-sm font-semibold text-gray-900"
-                  >
-                    {mode === 'add' && vote ? (
+                    className="sticky top-0 z-10 py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
+                  ></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
+                <tr className="divide-x divide-gray-200">
+                  <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-semibold text-gray-900 sm:pl-6">
+                    Total
+                  </td>
+                  <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-semibold text-gray-500 sm:pl-6">
+                    <div className="flex items-center justify-center gap-x-4">
+                      <div className="flex items-center justify-center">
+                        <HiCheck size={16} />: 0
+                      </div>
+                      <div className="flex items-center justify-center">
+                        ?: 0
+                      </div>
+                      <div className="flex items-center justify-center">
+                        <HiOutlineX size={16} />: 0
+                      </div>
+                    </div>
+                  </td>
+                  <td></td>
+                </tr>
+                {mode === 'view' && (
+                  <tr className="divide-x divide-gray-200">
+                    <td
+                      colSpan={slots.length + 2}
+                      className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
+                    >
+                      <button
+                        type="button"
+                        className="button-primary button m-auto"
+                        onClick={startAdding}
+                      >
+                        Add My Availability
+                      </button>
+                    </td>
+                  </tr>
+                )}
+                {mode === 'add' && vote && (
+                  <tr className="divide-x divide-gray-200">
+                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                       <input
                         type="text"
                         className="input-text w-auto m-auto"
@@ -135,59 +165,24 @@ export const TimeSlots = ({ slots, onVoteChange }: Props) => {
                           });
                         }}
                       />
-                    ) : (
-                      <button
-                        type="button"
-                        className="button-primary button mx-auto"
-                        onClick={startAdding}
+                    </td>
+                    {slots.map((slot) => (
+                      <td
+                        key={slot.id}
+                        className="whitespace-nowrap px-3 py-4 text-sm text-gray-500"
                       >
-                        Set My Availability
-                      </button>
-                    )}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {slots.map((slot) => (
-                  <tr key={slot.id} className="divide-x divide-gray-200">
-                    <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-semibold text-gray-900 sm:pl-6">
-                      {formatDate(new Date(slot.event_date), 'MMMM dd, yyyy')}
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-center text-gray-500">
-                      0
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-center text-gray-500">
-                      0
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-center text-gray-500">
-                      0
-                    </td>
-                    <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {mode === 'add' && vote && (
                         <AvailabilityOptions
                           selectedOption={
                             vote.availabilities.find(
-                              (availability) =>
-                                availability.time_slot_id === slot.id
+                              (v) => v.time_slot_id === slot.id
                             )!.availability
                           }
-                          onChange={(value) => {
-                            onChangeAvailability(
-                              slot.id,
-                              value as Availability
-                            );
-                          }}
+                          onChange={(value) =>
+                            onChangeAvailability(slot.id, value)
+                          }
                         />
-                      )}
-                    </td>
-                  </tr>
-                ))}
-                {mode === 'add' && vote && (
-                  <tr className="divide-x divide-gray-200">
-                    <td
-                      colSpan={4}
-                      className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-semibold text-gray-900 sm:pl-6"
-                    ></td>
+                      </td>
+                    ))}
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                       <div className="flex items-center gap-x-10 justify-center">
                         <button

@@ -1,16 +1,16 @@
-import { Radio, RadioGroup } from "@headlessui/react";
-import { HiCheck, HiOutlineX } from "react-icons/hi";
-import { Availability } from "../common/type";
+import { Radio, RadioGroup } from '@headlessui/react';
+import { HiCheck, HiOutlineX } from 'react-icons/hi';
+import { Availability } from '../common/type';
 
 const options = [
-  { label: <HiCheck className="mx-auto" size={22} />, value: "available" },
-  { label: <span className="text-lg font-bold">?</span>, value: "unknown" },
-  { label: <HiOutlineX className="mx-auto" size={22} />, value: "unavailable" },
+  { label: <HiCheck className="mx-auto" size={22} />, value: 'available' },
+  { label: <span className="text-lg font-bold">?</span>, value: 'unknown' },
+  { label: <HiOutlineX className="mx-auto" size={22} />, value: 'unavailable' },
 ];
 
 type Props = {
   selectedOption: Availability;
-  onChange: (value: string) => void;
+  onChange: (value: Availability) => void;
 };
 
 export const AvailabilityOptions = ({ selectedOption, onChange }: Props) => {
