@@ -52,7 +52,7 @@ const Page = () => {
   }
 
   return (
-    <div className='m-4 sm:m-20'>
+    <div className=''>
       <div className='flex items-center'>
         <h1 className='text-2xl font-bold p-2'>{eventData.name}</h1>
         <div

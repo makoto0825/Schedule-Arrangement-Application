@@ -33,7 +33,7 @@ const Page = () => {
   }, []);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    <>
       {event ? (
         <div>
           <div className="sm:flex sm:items-center">
@@ -69,7 +69,7 @@ const Page = () => {
           <p className="text-lg">Loading...</p>
         </div>
       )}
-    </div>
+    </>
   );
 };
 

@@ -43,7 +43,7 @@ const Page = () => {
     //setEvent
     setEventName(data.name);
     setEventDescription(data.description);
-    const formattedList = data.timeSlots.map((slot: TimeSlot) => {
+    const formattedList = data.time_slots.map((slot: TimeSlot) => {
       const date = format(new Date(slot.event_date), 'MMMM do, yyyy'); // 例: "March 30th, 2025"
       return [date, slot.time, slot.id];
     });
@@ -132,7 +132,7 @@ const Page = () => {
   };
 
   return (
-    <div className='sm:w-3/4 mx-auto p-6 pb-20'>
+    <div className=''>
       <h2 className='text-xl sm:text-2xl font-semibold py-4'>Edit Event</h2>
       <div className='my-4  sm:w-1/2'>
         <label className='block text-gray-700'>Event name</label>

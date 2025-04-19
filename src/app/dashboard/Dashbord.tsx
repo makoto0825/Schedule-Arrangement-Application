@@ -21,8 +21,7 @@ const Dashboard = ({ userId }: { userId: string }) => {
   }, []);
 
   return (
-    <div className='bg-gray-100 h-full '>
-      <div className=' px-[5%] py-6  '>
+    <div className='h-full'>
         {/* Upcoming Events */}
         <div className='mb-20  mx-auto '>
           <h2 className='text-xl font-semibold mb-4'>Upcoming Events</h2>
@@ -59,7 +58,6 @@ const Dashboard = ({ userId }: { userId: string }) => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

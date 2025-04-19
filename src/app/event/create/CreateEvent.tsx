@@ -81,7 +81,7 @@ const CreateEvent = ({ userId }: { userId: string }) => {
   };
 
   return (
-    <div className='sm:w-3/4 mx-auto p-6 pb-20'>
+    <div className=''>
       <h2 className='text-xl sm:text-2xl font-semibold py-4'>
         Create Your Next Event
       </h2>
