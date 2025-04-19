@@ -6,10 +6,7 @@ const page = async () => {
   const supabase = await createClient();
   const { data: sessionData } = await supabase.auth.getSession();
   return (
-    <>
-      <div>{sessionData.session?.user.id}</div>
       <CreateEvent userId={sessionData.session?.user.id || ''} />
-    </>
   );
 };
 

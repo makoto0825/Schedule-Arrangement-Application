@@ -41,7 +41,7 @@ model TimeSlot {
 model Vote {
   id           Int      @id @default(autoincrement())
   time_slot_id Int
-  status       Int
+  availability String   @db.VarChar(255)
   voter_id     Int
   created_at   DateTime @default(now())
   updated_at   DateTime @updatedAt

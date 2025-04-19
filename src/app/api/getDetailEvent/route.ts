@@ -36,6 +36,7 @@ export async function GET(request: Request) {
     // Fetch time slots associated with the event
     const timeSlots = await prisma.timeSlot.findMany({
       where: { event_id: Number(eventId) },
+      orderBy: { event_date: 'asc' },
     });
     if (!timeSlots) {
       return NextResponse.json(
@@ -43,11 +44,43 @@ export async function GET(request: Request) {
         { status: 404 }
       );
     }
+
     // create eventData object with time slots
     const eventDataWithTimeSlots = {
       ...eventData,
-      timeSlots: timeSlots,
+      time_slots: timeSlots,
     };
+
+    // Check if we need to fetch votes
+    const shouldFetchVotes = searchParams.get('withVotes');
+    if (shouldFetchVotes === 'true') {
+      // Fetch votes associated with the time slots
+      const timeSlotsWithVotes = await Promise.all(
+        timeSlots.map(async (slot) => {
+          const votes = await prisma.vote.findMany({
+            where: { time_slot_id: slot.id },
+            orderBy: { created_at: 'desc' },
+          });
+          const votesWithVoterName = await Promise.all(
+            votes.map(async (v) => {
+              const voter = await prisma.voter.findUnique({
+                where: { id: v.voter_id },
+              });
+              if (!voter) {
+                return NextResponse.json(
+                  { message: 'Voter not found' },
+                  { status: 404 }
+                );
+              }
+              return { ...v, voter_name: voter.name };
+            })
+          );
+          return { ...slot, votes: votesWithVoterName };
+        })
+      );
+      // Update eventDataWithTimeSlots with time slots that include votes
+      eventDataWithTimeSlots.time_slots = timeSlotsWithVotes;
+    }
 
     return NextResponse.json(eventDataWithTimeSlots, { status: 200 });
   } catch (error) {
