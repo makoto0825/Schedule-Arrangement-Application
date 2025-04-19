@@ -1,20 +1,20 @@
-"use client";
-import { formatDate } from "date-fns";
-import { HiCheck, HiOutlineX } from "react-icons/hi";
+'use client';
+import { formatDate } from 'date-fns';
+import { HiCheck, HiOutlineX } from 'react-icons/hi';
 import {
   Availability,
   TimeSlotAvailability,
   TimeSlotWithVotes,
-} from "../common/type";
-import { useState } from "react";
-import { AvailabilityOptions } from "./AvailabilityOptions";
+} from '../common/type';
+import { useState } from 'react';
+import { AvailabilityOptions } from './AvailabilityOptions';
 
 type Props = {
   slots: TimeSlotWithVotes[];
   onVoteChange: () => void;
 };
 
-type Mode = "view" | "add";
+type Mode = 'view' | 'add';
 type Vote = {
   voterId: number | undefined; // undefined if adding
   voter_name: string;
@@ -22,23 +22,23 @@ type Vote = {
 };
 
 export const TimeSlots = ({ slots, onVoteChange }: Props) => {
-  const [mode, setMode] = useState<Mode>("view");
+  const [mode, setMode] = useState<Mode>('view');
   const [vote, setVote] = useState<Vote | null>(null);
 
   const startAdding = () => {
-    setMode("add");
+    setMode('add');
     setVote({
       voterId: undefined,
-      voter_name: "",
+      voter_name: '',
       availabilities: slots.map((slot) => ({
         time_slot_id: slot.id,
-        availability: "unknown",
+        availability: 'unknown',
       })),
     });
   };
 
   const resetEditingState = () => {
-    setMode("view");
+    setMode('view');
     setVote(null);
   };
 
@@ -46,15 +46,15 @@ export const TimeSlots = ({ slots, onVoteChange }: Props) => {
     if (!vote) return;
 
     if (!vote.voter_name) {
-      alert("Please enter your name");
+      alert('Please enter your name');
       return;
     }
 
     if (!vote.voterId) {
-      const response = await fetch("/api/createVotesWithVoter", {
-        method: "POST",
+      const response = await fetch('/api/createVotesWithVoter', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(vote),
       });
@@ -62,7 +62,7 @@ export const TimeSlots = ({ slots, onVoteChange }: Props) => {
       if (response.ok) {
         resetEditingState();
       } else {
-        console.error("Failed to submit vote");
+        console.error('Failed to submit vote');
       }
     }
 
@@ -122,7 +122,7 @@ export const TimeSlots = ({ slots, onVoteChange }: Props) => {
                     scope="col"
                     className="px-3 py-3.5 align-middle text-center text-sm font-semibold text-gray-900"
                   >
-                    {mode === "add" && vote ? (
+                    {mode === 'add' && vote ? (
                       <input
                         type="text"
                         className="input-text w-auto m-auto"
@@ -151,7 +151,7 @@ export const TimeSlots = ({ slots, onVoteChange }: Props) => {
                 {slots.map((slot) => (
                   <tr key={slot.id} className="divide-x divide-gray-200">
                     <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-semibold text-gray-900 sm:pl-6">
-                      {formatDate(new Date(slot.event_date), "MMMM dd, yyyy")}
+                      {formatDate(new Date(slot.event_date), 'MMMM dd, yyyy')}
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-center text-gray-500">
                       0
@@ -163,7 +163,7 @@ export const TimeSlots = ({ slots, onVoteChange }: Props) => {
                       0
                     </td>
                     <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                      {mode === "add" && vote && (
+                      {mode === 'add' && vote && (
                         <AvailabilityOptions
                           selectedOption={
                             vote.availabilities.find(
@@ -182,7 +182,7 @@ export const TimeSlots = ({ slots, onVoteChange }: Props) => {
                     </td>
                   </tr>
                 ))}
-                {mode === "add" && vote && (
+                {mode === 'add' && vote && (
                   <tr className="divide-x divide-gray-200">
                     <td
                       colSpan={4}
