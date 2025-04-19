@@ -77,7 +77,7 @@ export const Steps = () => {
               />
             </div>
             <div className="py-6">
-              <p className="text-base font-semibold text-whit mt-4">
+              <p className="text-base font-semibold text-white mt-4">
                 {step.caption}
               </p>
               <h3 className="text-2xl sm:text-3xl font-bold">{step.title}</h3>
