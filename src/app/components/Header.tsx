@@ -6,9 +6,19 @@ import { createClient } from '../utils/supabase/client';
 
 export const Header = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
   const signOut = async () => {
-    const supabase = await createClient();
-    await supabase.auth.signOut();
-    window.location.href = '/login';
+    try {
+      const supabase = await createClient();
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Error signing out:', error.message);
+        alert('Failed to sign out. Please try again.');
+        return;
+      }
+      window.location.href = '/login';
+    } catch (err) {
+      console.error('Unexpected error during sign-out:', err);
+      alert('An unexpected error occurred. Please try again.');
+    }
   };
 
   return (
