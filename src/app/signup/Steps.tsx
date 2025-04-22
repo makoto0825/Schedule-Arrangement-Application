@@ -95,8 +95,8 @@ export const Steps = () => {
           <button
             key={idx}
             onClick={() => setCurrentIndex(idx)}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              currentIndex === idx ? 'bg-fuchsia-300 w-10' : 'bg-white'
+            className={`h-3 rounded-full transition-all duration-300 ${
+              currentIndex === idx ? 'bg-fuchsia-300 w-10' : 'bg-white w-3'
             }`}
           />
         ))}

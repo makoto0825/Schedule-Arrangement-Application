@@ -1,6 +1,6 @@
-import Image from "next/image";
-import Link from "next/link";
-import { login } from "./actions";
+import Image from 'next/image';
+import Link from 'next/link';
+import { login } from './actions';
 
 const page = () => {
   return (
@@ -44,14 +44,6 @@ const page = () => {
                   >
                     Password
                   </label>
-                  <div className="text-sm">
-                    <a
-                      href="#"
-                      className="font-medium text-primary hover:text-blue-500"
-                    >
-                      Forgot password?
-                    </a>
-                  </div>
                 </div>
                 <div className="mt-2">
                   <input
@@ -77,7 +69,7 @@ const page = () => {
             </form>
 
             <p className="mt-10 text-center text-sm/6 text-foreground-weak">
-              Not a member?{" "}
+              Not a member?{' '}
               <Link
                 href="/signup"
                 className="font-semibold text-primary hover:text-blue-500"
